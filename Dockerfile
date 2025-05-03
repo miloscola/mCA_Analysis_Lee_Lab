@@ -60,9 +60,8 @@ RUN wget https://s3.amazonaws.com/plink2-assets/plink2_linux_x86_64_latest.zip &
 # Install R packages
 RUN R -e "install.packages(c('data.table', 'optparse', 'ggplot2'), repos='http://cran.r-project.org')"
 
-# MoChA installation (optional, adjust path as needed)
+# Clone MoChA for scripts
 RUN git clone https://github.com/freeseek/mocha.git /opt/mocha && \
-    cd /opt/mocha && make && \
     ln -s /opt/mocha/bin/* /usr/local/bin/
 
 # Build TOPMed variant calling tools
