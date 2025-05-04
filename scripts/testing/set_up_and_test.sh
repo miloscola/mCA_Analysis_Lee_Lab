@@ -1,4 +1,5 @@
-﻿
+#!/bin/bash
+
 ############################################################################################################
 #
 #   Objective: Download test data and run the following scripts:
@@ -8,7 +9,8 @@
 #         step3_mCA_filter.R
 #         Step4_allele_shift.sh
 #
-#   NOTE: line endings were changed from windows (CRLF) to UNIX (LF) for this file and all TopMed_WGS_mCA files
+#   NOTE: line endings were changed from windows (CRLF) to UNIX (LF) for this file and all TopMed_WGS_mCA files.
+#		  These files may not be properly altered on the github repo.
 #
 ############################################################################################################
 #   
@@ -58,7 +60,7 @@
 ############################################################################################################
 
 # Specify wd
-wd=$(basename "$(dirname "$(dirname "$PWD")")")
+wd="$(dirname "$(dirname "$PWD")")"
 echo -e "Working Directory: $wd\n"
 
 # Make base directories

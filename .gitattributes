@@ -1,0 +1,46 @@
+# ========================
+# Line Endings and Encoding Normalization
+# ========================
+
+# Auto-detect text files and convert CRLF to LF on commit
+* text=auto eol=lf
+
+# ========================
+# Shell Scripts
+# ========================
+*.sh text eol=lf
+
+# ========================
+# R Scripts
+# ========================
+*.R text eol=lf
+
+# ========================
+# Python (if used)
+# ========================
+*.py text eol=lf
+
+# ========================
+# TSV, CSV, and Metadata Files
+# ========================
+*.tsv text eol=lf
+*.csv text eol=lf
+*.txt text eol=lf
+
+# ========================
+# VCF and BCF Files (usually binary or compressed)
+# ========================
+*.vcf binary
+*.vcf.gz binary
+*.bcf binary
+*.bcf.csi binary
+*.fai text eol=lf
+
+# ========================
+# Other config/data files
+# ========================
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.gitignore text eol=lf
