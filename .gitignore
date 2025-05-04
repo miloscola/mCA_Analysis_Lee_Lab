@@ -1,1 +1,7 @@
 .vs/**
+GRCh38/**
+mCA/**
+raw_data/**
+down-sample/**
+mis/**
+logs/**
