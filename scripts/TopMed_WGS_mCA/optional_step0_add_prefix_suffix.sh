@@ -56,7 +56,7 @@
 echo -e "script:optional_step0_add_prefix_suffix started at $(date)/n"
 
 # specify your wd
-wd="your_proj_working_directory"
+wd="/data"
 echo -e "Working Directory: $wd\n"
 
 # Make sure the directories are ready

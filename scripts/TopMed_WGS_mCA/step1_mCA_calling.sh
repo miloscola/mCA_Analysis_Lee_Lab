@@ -80,7 +80,7 @@ echo -e "script:step1_mCA_calling started at $(date)\n"
 echo -e "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}\n"
 
 # specify your wd
-wd="your_proj_working_directory"
+wd="/data"
 echo -e "Working Directory: $wd\n"
 
 # Make sure the directories are ready

@@ -46,7 +46,8 @@
 #
 #
 ############################################################################################################
-tsv <- "path_to_this_tsv/all.mCA.tsv"
+
+tsv <- file.path("data", "mCA", "mCA_results", "all.mCA.tsv")
 
 mCA <-read.csv(file=tsv, header=T,sep="\t")
 
