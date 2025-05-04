@@ -4,9 +4,6 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Copy repository contents (TOPMed-specific)
-COPY . /topmed_variant_calling
-
 # Install base system packages and development libraries
 RUN apt-get update && apt-get install -y \
     apt-utils \
@@ -42,6 +39,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+
+
 # Install PLINK 1.9
 RUN mkdir /tmp/plink && cd /tmp/plink && \
     wget http://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20190617.zip && \
@@ -65,8 +64,9 @@ RUN git clone https://github.com/freeseek/mocha.git /opt/mocha && \
     ln -s /opt/mocha/bin/* /usr/local/bin/
 
 # Build TOPMed variant calling tools
+RUN git clone --recurse-submodules https://github.com/auerlab/TOPMed-mCA-and-LoY-calling.git /topmed_variant_calling
+RUN cd /topmed_variant_calling && git submodule update --init --recursive
 WORKDIR /topmed_variant_calling
-RUN git submodule init && git submodule update
 
 RUN cd libsvm && git clean -fdx && make && cd ..
 RUN cd apigenome && git clean -fdx && autoreconf -vfi && ./configure --prefix $PWD && make && make install && cd ..
