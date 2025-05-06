@@ -1,0 +1,25 @@
+# Large file types
+*.fna
+*.fai
+*.cram
+*.crai
+*.vcf
+*.bcf
+*.bam
+*.gz
+
+# Exclude large or intermediate data folders
+GRCh38/
+mCA/
+raw_data/
+down-sample/
+logs/
+mis/GenomeWideHetCounts/
+mis/*.list
+
+# Ignore IDE and system files
+.vs/
+*.log
+*.err
+*.out
+

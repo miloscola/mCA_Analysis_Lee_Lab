@@ -70,11 +70,13 @@
 #   						......
 #
 ############################################################################################################
-module load bcftools/1.16
-module load bcftools-mocha/1.15
+
+# this environment does not use modules. Possibly change if using a high performance computing environment
+#module load bcftools/1.16
+#module load bcftools-mocha/1.15
 
 # set up the threads, it is equal to #SBATCH --ntasks=20
-threads=20
+threads=14
 
 echo -e "script:step1_mCA_calling started at $(date)\n"
 echo -e "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}\n"
@@ -92,7 +94,8 @@ mkdir -p $wd/mCA/mCA_results/{mCA_calls,mCA_stats,mCA_vcf} # to save mCA results
 sample_dir="$wd/mis"
 
 # ## #SBATCH --array=1-5, supposing you have 5 VCFs in such a -----> vcf.list.txt
-vcf=$(head -n ${SLURM_ARRAY_TASK_ID} ${sample_dir}/vcf.list.txt | tail -n +${SLURM_ARRAY_TASK_ID})   
+array_id=${SLURM_ARRAY_TASK_ID:-1}  # Default to 1 if not set
+vcf=$(head -n $array_id ${sample_dir}/vcf.list.txt | tail -n +$array_id)   
 
 # sample ID extract
 id=$(basename $vcf ".vcf") # vcf=proj1_NWD123654.vcf --> id=proj1_NWD123654
@@ -100,7 +103,7 @@ echo -e "$vcf is processing, sample_id=$id\n"
 
 # Make sure your reference fasta exists. Please refer to https://github.com/freeseek/mocha for GRCh38 resources
 # Supposing you are using hg38 for such as an analysis
-ref="$wd/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
+ref="$wd/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 echo -e "GRCh38 reference: ${ref} is applied.\n"
 
 # If your VCF does not have header, the following steps will help you concatenate the header before calling.

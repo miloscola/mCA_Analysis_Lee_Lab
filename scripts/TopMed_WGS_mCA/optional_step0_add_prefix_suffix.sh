@@ -53,32 +53,35 @@
 #   			......
 #
 ############################################################################################################
-echo -e "script:optional_step0_add_prefix_suffix started at $(date)/n"
+echo -e "script:optional_step0_add_prefix_suffix started at $(date)\n"
 
-# specify your wd
+# Specify your working directory
 wd="/data"
 echo -e "Working Directory: $wd\n"
 
-# Make sure the directories are ready
+# Ensure necessary directories exist
 mkdir -p $wd/{logs,raw_data,mis,scripts,GRCh38,mCA}
 
-# Make sure the TopMed sample list exists, it should be one row one sample ID
+# Directory containing the sample list
 sample_dir="$wd/mis"
 
-# Add the prefix and suffix for each TopMed sample 
-# Such as file: combined.NWD100014-ad.vcf.xz
-# pfx="combined."
-# sfx="-ad.vcf.xz" 
-# ID="NWD100014"
-
+# Prefix and suffix for VCF filenames
 pfx="combined."
-sfx="-ad.vcf.xz"
+sfx="-ad.vcf"
 
-while read ID
-do
-echo "${pfx}${ID}${sfx}"
+# Temporary file to store output
+tmp_list="${sample_dir}/raw_VCF_list"
 
-done < ${sample_dir}/TopMed_sample_list >> ${sample_dir}/raw_VCF_list
-echo -e "Raw VCF files were listed out in: ${sample_dir}/raw_VCF_list\n"
+# Create or truncate the output list file
+> "$tmp_list"
 
-echo -e "script:optional_step0_add_prefix_suffix ended at $(date)/n"
+# Read sample IDs and construct filenames
+while read -r ID; do
+    echo "${pfx}${ID}${sfx}" >> "$tmp_list"
+done < "${sample_dir}/TopMed_sample_list"
+
+# Copy or move the final list to the expected file
+#cp "$tmp_list" "${sample_dir}/vcf.list.txt"
+#echo -e "Raw VCF files were listed out in: ${sample_dir}/vcf.list.txt\n"
+
+echo -e "script:optional_step0_add_prefix_suffix ended at $(date)\n"

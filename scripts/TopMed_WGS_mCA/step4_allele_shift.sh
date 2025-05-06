@@ -58,17 +58,19 @@
 #             MoChA VCFs have to be combined together.
 #
 ############################################################################################################
-module load bcftools/1.16
-module load bcftools-mocha/1.15
+
+# this environment does not use modules. Possibly change if using a high performance computing environment
+#module load bcftools/1.16
+#module load bcftools-mocha/1.15
 
 # set up the threads, it is equal to #SBATCH --ntasks=20
-threads=20
+threads=14
 
 echo -e "script:step4_allele_shift started at $(date)\n"
 echo -e "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}\n"
 
 # specify your wd
-wd="$(dirname "$(dirname "$PWD")")"
+wd="/data"
 mCA_vcf="$wd/mCA/mCA_results/mCA_vcf"
 echo -e "Working Directory: $wd\n"
 

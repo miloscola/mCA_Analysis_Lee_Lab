@@ -47,6 +47,9 @@ echo -e "script:optional_step-1_pre-process_CRAM started at $(date)/n"
 wd="/data"
 echo -e "Working Directory: $wd\n"
 
+# set up threads
+threads=14
+
 # Make sure the directories are ready
 mkdir -p $wd/{logs,raw_data,mis,scripts,GRCh38,mCA}
 
@@ -54,7 +57,7 @@ mkdir -p $wd/{logs,raw_data,mis,scripts,GRCh38,mCA}
 sample_dir="$wd/mis"
 
 # Path to GRCh38 reference genome
-ref="$wd/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
+ref="$wd/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 
 # Ensure reference genome index exists
 if [ ! -f "$ref.fai" ]; then
@@ -66,9 +69,16 @@ fi
 cram_input_dir="$wd/raw_data/cram_input"
 mkdir -p $cram_input_dir
 
-# Loop over each sample ID in TopMed_sample_list
 while read sample_id; do
     echo -e "Processing sample: $sample_id\n"
+
+    vcf_out="$wd/raw_data/${sample_id}.vcf"
+
+    # Skip if VCF already exists
+    if [ -f "$vcf_out" ]; then
+        echo "$vcf_out already exists. Skipping $sample_id."
+        continue
+    fi
 
     # Define input CRAM path
     cram_file="$cram_input_dir/${sample_id}.cram"
@@ -82,15 +92,21 @@ while read sample_id; do
     samtools sort -o $sorted_bam $bam_file
     rm $bam_file  # optional cleanup
 
+    echo -e "Index BAM sorting complete"
+
     # Index sorted BAM
     samtools index $sorted_bam
+    
+    echo -e "Index complete"
 
     # Generate VCF with GT, AD, DP (MoChA expects these fields)
-    vcf_out="$wd/raw_data/${sample_id}.vcf"
-    bcftools mpileup -Ou -f $ref -a FORMAT/AD,FORMAT/DP $sorted_bam | \
-    bcftools call -m -Ov -o $vcf_out
+    bcftools mpileup --threads $threads -Ou -f $ref -a FORMAT/AD,FORMAT/DP $sorted_bam | \
+    bcftools call --threads $threads -m -Ov -o $vcf_out
 
-    echo -e "Sample $sample_id processed to VCF: $vcf_out\n"
+    echo -e "Finished generating $vcf_out\n"
+
+    # Extract header to head.txt (only needs to be done once; overwrite or skip accordingly)
+    bcftools view -h $vcf_out > "$wd/mis/head.txt"
 
 done < "$sample_dir/TopMed_sample_list"
 

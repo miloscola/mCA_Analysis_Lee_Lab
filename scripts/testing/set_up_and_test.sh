@@ -12,6 +12,10 @@
 #   NOTE: line endings were changed from windows (CRLF) to UNIX (LF) for this file and all TopMed_WGS_mCA files.
 #		  These files may not be properly altered on the github repo.
 #
+#   NOTE: this is not the optimal refrence genome for usage of this tool outside testing. Replace the file in step 1
+#
+#   USE: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/$gz_file
+#
 ############################################################################################################
 #   
 #   Revision History: 
@@ -72,7 +76,7 @@ mkdir -p $wd/{logs,raw_data,mis,scripts,GRCh38,mCA}
 
 # Set file names and directory
 genome_ref_dir="$wd/GRCh38"
-ref_file="GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
+ref_file="GRCh38_full_analysis_set_plus_decoy_hla.fa"
 gz_file="$ref_file.gz"
 
 
@@ -81,15 +85,18 @@ if [ -f "$genome_ref_dir/$ref_file" ]; then
   echo "Reference genome already exists at $genome_ref_dir/$ref_file. Skipping download."
 else
   echo "Downloading and extracting GRCh38 reference genome..."
-  wget -O "$genome_ref_dir/$gz_file" \
-    ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/$gz_file
+  wget -O "$genome_ref_dir/$ref_file" \
+    ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/GRCh38_full_analysis_set_plus_decoy_hla.fa
   gzip -d "$genome_ref_dir/$gz_file"
 fi
 
-# Generate index
-samtools faidx $wd/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
-
-echo "Refrence genome downloaded and index generated in $genome_ref_dir."
+# Generate index it doesn't exist
+if [ ! -f "$genome_ref_dir/$ref_file.fai" ]; then
+  echo "Reference index not found. Generating with samtools faidx..."
+  samtools faidx "$ref_path"
+else
+  echo "Reference index already exists at ${ref_path}.fai. Skipping generation."
+fi
 
 ## Download CRAM files if they do not already exist ##
 
@@ -98,15 +105,9 @@ cram_input_dir="$wd/raw_data/cram_input"
 mkdir -p $cram_input_dir
 
 # List of CRAM and CRAI file URLs
-urls=(
-  "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00234/alignment/HG00234.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram"
-  "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00234/alignment/HG00234.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram.crai"
-  
+urls=(  
   "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00114/alignment/HG00114.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram"
   "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00114/alignment/HG00114.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram.crai"
-  
-  "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00116/alignment/HG00116.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram"
-  "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00116/alignment/HG00116.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram.crai"
 )
 
 # Loop through URLs
@@ -148,7 +149,32 @@ echo "All CRAM and CRAI files are downloaded in $cram_input_dir."
 ## Create TopMed sample list ##
 
 sample_list_ref_dir="$wd/mis"
-echo -e "HG00114\nHG00116\nHG00234" > $sample_list_ref_dir/TopMed_sample_list
+echo -e "HG00114" > "$sample_list_ref_dir/TopMed_sample_list"
+
+## Create VCF list ##
+
+printf "HG00114.vcf" > "$sample_list_ref_dir/vcf.list.txt"
 
 ## generate VCF files ##
 
+bash scripts/TopMed_WGS_mCA/optional_step-1_pre-process_CRAM.sh
+
+## run optional_step0_add_prefix_suffix.sh ##
+
+bash scripts/TopMed_WGS_mCA/optional_step0_add_prefix_suffix.sh
+
+## run step1_mCA_calling.sh ##
+
+bash scripts/TopMed_WGS_mCA/step1_mCA_calling.sh
+
+## run optional_step2_mCA_compile.sh ##
+
+bash scripts/TopMed_WGS_mCA/optional_step2_mCA_compile.sh
+
+## run step3_mCA_filter ##
+
+Rscript scripts/TopMed_WGS_mCA/step3_mCA_filter.R
+
+## step4_allele_shift.sh ##
+
+bash scripts/TopMed_WGS_mCA/step4_allele_shift.sh
