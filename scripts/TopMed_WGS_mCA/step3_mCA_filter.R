@@ -48,7 +48,7 @@
 ############################################################################################################
 
 # the "proj1"" name is hardcoded in both here and in script 2. Fix in snakemake 
-tsv <- file.path("data", "mCA", "mCA_results", "proj1.all.mCA.tsv")
+tsv <- file.path("workspace", "mCA", "mCA_results", "proj1.all.mCA.tsv")
 
 mCA <-read.csv(file=tsv, header=T,sep="\t")
 
@@ -70,7 +70,7 @@ f6<- mCA$bdev > 0
 
 f_all <- f2 & !f3 & !f4 & f5 & f6
 
-output<-"path_to_output/long.mCA.filtered.tsv.gz"
+output<-file.path("workspace", "mCA", "long.mCA.filtered.tsv.gz") 
 
 write.table(mCA[f_all,], gzfile(output), col.names= T, row.names=F,sep="\t", quote=F)
 

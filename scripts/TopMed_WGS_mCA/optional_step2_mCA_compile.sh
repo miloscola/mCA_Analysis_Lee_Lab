@@ -49,7 +49,8 @@
 
 echo -e "script:optional_step2_mCA_compile started at $(date)\n"
 
-wd="/data"
+mkdir -p workspace
+wd="/workspace"
 mCA_dir="$wd/mCA/mCA_results/mCA_calls"
 output="$wd/mCA/mCA_results"
 

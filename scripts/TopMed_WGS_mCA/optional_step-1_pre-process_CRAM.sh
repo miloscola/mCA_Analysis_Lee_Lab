@@ -44,11 +44,12 @@
 echo -e "script:optional_step-1_pre-process_CRAM started at $(date)/n"
 
 # specify your wd
-wd="/data"
+mkdir -p workspace
+wd="/workspace"
 echo -e "Working Directory: $wd\n"
 
 # set up threads
-threads=14
+threads=10
 
 # Make sure the directories are ready
 mkdir -p $wd/{logs,raw_data,mis,scripts,GRCh38,mCA}
@@ -72,7 +73,7 @@ mkdir -p $cram_input_dir
 while read sample_id; do
     echo -e "Processing sample: $sample_id\n"
 
-    vcf_out="$wd/raw_data/${sample_id}.vcf"
+    vcf_out="$wd/raw_data/head.${sample_id}.vcf"
 
     # Skip if VCF already exists
     if [ -f "$vcf_out" ]; then
@@ -100,8 +101,19 @@ while read sample_id; do
     echo -e "Index complete"
 
     # Generate VCF with GT, AD, DP (MoChA expects these fields)
-    bcftools mpileup --threads $threads -Ou -f $ref -a FORMAT/AD,FORMAT/DP $sorted_bam | \
-    bcftools call --threads $threads -m -Ov -o $vcf_out
+    #bcftools mpileup --threads $threads -Ou -f $ref -a FORMAT/AD,FORMAT/DP $sorted_bam | \
+    #bcftools call --threads $threads -m -Ov -o $vcf_out
+
+    # Generate raw VCF (Chromasome 22 only for testing)
+    raw_vcf="$wd/raw_data/${sample_id}.raw.vcf"
+    bcftools mpileup --threads "$threads" -Ou -f "$ref" -r chr22 -a FORMAT/AD,FORMAT/DP "$sorted_bam" | \
+    bcftools call --threads "$threads" -m -Ov -o "$raw_vcf"
+
+    # Keep only GT:AD format, normalize, and clean
+    bcftools annotate -x FORMAT/DP "$raw_vcf" | \
+    bcftools norm -f "$ref" -Ov -o "$vcf_out"
+
+    rm -f "$raw_vcf"
 
     echo -e "Finished generating $vcf_out\n"
 

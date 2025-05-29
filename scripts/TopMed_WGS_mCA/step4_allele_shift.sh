@@ -64,13 +64,14 @@
 #module load bcftools-mocha/1.15
 
 # set up the threads, it is equal to #SBATCH --ntasks=20
-threads=14
+threads=10
 
 echo -e "script:step4_allele_shift started at $(date)\n"
 echo -e "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}\n"
 
 # specify your wd
-wd="/data"
+mkdir -p workspace
+wd="/workspace"
 mCA_vcf="$wd/mCA/mCA_results/mCA_vcf"
 echo -e "Working Directory: $wd\n"
 
@@ -89,7 +90,7 @@ mkdir -p $wd/mCA/AS
 # keep chr11 & q_arm=T & CN-LOH  ---> ATM:chromosome 11 (11q)
 
 as="$wd/mCA/AS"
-all_mCA="$wd//mCA/mCA_results/all.mCA.tsv"
+all_mCA="$wd//mCA/mCA_results/proj1.all.mCA.tsv"
 
 # For MPL sample ID 
 awk '{if($3 == "chr1" && $7 == "T" && $21 == "CN-LOH") print $1}' ${all_mCA} > $as/MPL.sample.id
@@ -97,17 +98,19 @@ awk '{if($3 == "chr1" && $7 == "T" && $21 == "CN-LOH") print $1}' ${all_mCA} > $
 # For ATM sample ID 
 awk '{if($3 == "chr11" && $8 == "T" && $21 == "CN-LOH") print $1}' ${all_mCA} > $as/ATM.sample.id
 
+##POSSIBLE BUG: > instead of >> (changed to >>)
+
 # make the index file for each mCA VCF for both MPL & ATM 
 while read id
 do 
 	bcftools index --force ${mCA_vcf}/mCA_vcf.$id.bcf
-	echo "${mCA_vcf}/mCA_vcf.$id.bcf" > ${mCA_vcf}/MPL.vcf.list 
+	echo "${mCA_vcf}/mCA_vcf.$id.bcf" >> ${mCA_vcf}/MPL.vcf.list 
 done < $as/MPL.sample.id
 
 while read id
 do 
 	bcftools index --force ${mCA_vcf}/mCA_vcf.$id.bcf
-	echo "${mCA_vcf}/mCA_vcf.$id.bcf" > ${mCA_vcf}/ATM.vcf.list 
+	echo "${mCA_vcf}/mCA_vcf.$id.bcf" >> ${mCA_vcf}/ATM.vcf.list 
 done < $as/ATM.sample.id
 
 # Make the file list for VCF combination 

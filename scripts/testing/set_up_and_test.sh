@@ -65,17 +65,21 @@
 #
 ############################################################################################################
 
+#TODO: ensure files are in correct place, may change WD
+#TODO: add multiple files in testing phase
+
 # Specify wd
-wd="/data"
-echo -e "Working Directory: $wd\n"
+host_data_dir="/data"
+mkdir -p workspace
+work_dir="/data"
 
 # Make base directories
-mkdir -p $wd/{logs,raw_data,mis,scripts,GRCh38,mCA}
+mkdir -p $work_dir/{logs,raw_data,mis,scripts,GRCh38,mCA}
 
 ## Download refrence genome if it does not already exist ##
 
 # Set file names and directory
-genome_ref_dir="$wd/GRCh38"
+genome_ref_dir="$work_dir/GRCh38"
 ref_file="GRCh38_full_analysis_set_plus_decoy_hla.fa"
 gz_file="$ref_file.gz"
 
@@ -101,7 +105,7 @@ fi
 ## Download CRAM files if they do not already exist ##
 
 # .cram/.crai input directory
-cram_input_dir="$wd/raw_data/cram_input"
+cram_input_dir="$work_dir/raw_data/cram_input"
 mkdir -p $cram_input_dir
 
 # List of CRAM and CRAI file URLs
@@ -148,7 +152,7 @@ echo "All CRAM and CRAI files are downloaded in $cram_input_dir."
 
 ## Create TopMed sample list ##
 
-sample_list_ref_dir="$wd/mis"
+sample_list_ref_dir="$work_dir/mis"
 echo -e "HG00114" > "$sample_list_ref_dir/TopMed_sample_list"
 
 ## Create VCF list ##
@@ -157,24 +161,25 @@ printf "HG00114.vcf" > "$sample_list_ref_dir/vcf.list.txt"
 
 ## generate VCF files ##
 
-bash scripts/TopMed_WGS_mCA/optional_step-1_pre-process_CRAM.sh
+bash data/scripts/TopMed_WGS_mCA/optional_step-1_pre-process_CRAM.sh
 
 ## run optional_step0_add_prefix_suffix.sh ##
 
-bash scripts/TopMed_WGS_mCA/optional_step0_add_prefix_suffix.sh
+bash data/scripts/TopMed_WGS_mCA/optional_step0_add_prefix_suffix.sh
 
 ## run step1_mCA_calling.sh ##
 
-bash scripts/TopMed_WGS_mCA/step1_mCA_calling.sh
+bash data/scripts/TopMed_WGS_mCA/step1_mCA_calling.sh
 
 ## run optional_step2_mCA_compile.sh ##
 
-bash scripts/TopMed_WGS_mCA/optional_step2_mCA_compile.sh
+bash data/scripts/TopMed_WGS_mCA/optional_step2_mCA_compile.sh
 
 ## run step3_mCA_filter ##
 
-Rscript scripts/TopMed_WGS_mCA/step3_mCA_filter.R
+Rscript data/scripts/TopMed_WGS_mCA/step3_mCA_filter.R
 
 ## step4_allele_shift.sh ##
+# NOTE: this step is not strictly necesissary and only 
 
-bash scripts/TopMed_WGS_mCA/step4_allele_shift.sh
+#bash data/scripts/TopMed_WGS_mCA/step4_allele_shift.sh

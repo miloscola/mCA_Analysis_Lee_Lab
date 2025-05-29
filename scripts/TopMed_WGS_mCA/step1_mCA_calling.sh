@@ -76,13 +76,14 @@
 #module load bcftools-mocha/1.15
 
 # set up the threads, it is equal to #SBATCH --ntasks=20
-threads=14
+threads=10
 
 echo -e "script:step1_mCA_calling started at $(date)\n"
 echo -e "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}\n"
 
 # specify your wd
-wd="/data"
+mkdir -p workspace
+wd="/workspace"
 echo -e "Working Directory: $wd\n"
 
 # Make sure the directories are ready
@@ -111,18 +112,27 @@ echo -e "GRCh38 reference: ${ref} is applied.\n"
 ############ The following section is optional ######################
 
 # make a specific header for specific sample 
-cp ${wd}/mis/head.txt ${wd}/raw_data/head.${id}.txt
-echo -e "Adding up header back to VCF and cut off unnecessary format info.\n"
+#cp ${wd}/mis/head.txt ${wd}/raw_data/head.${id}.txt
+#echo -e "Adding up header back to VCF and cut off unnecessary format info.\n"
 
 # label the sample ID
-sed -i "s/SAMPLE/$id/g" ${wd}/raw_data/head.${id}.txt  
+#sed -i "s/SAMPLE/$id/g" ${wd}/raw_data/head.${id}.txt  
 
 # concatenate the header with vcf main body 
-cat ${wd}/raw_data/head.${id}.txt ${wd}/raw_data/$vcf > ${wd}/raw_data/head.$vcf
+#cat ${wd}/raw_data/head.${id}.txt ${wd}/raw_data/$vcf > ${wd}/raw_data/head.$vcf
 
 # chop off the unnecessary format and only keep the ones MoChA required
-sed -Ei "s/,[[:digit:]]*:[[:digit:]]*$//g" ${wd}/raw_data/head.$vcf
-sed -Ei "s/:DP//g" ${wd}/raw_data/head.$vcf
+#sed -Ei "s/,[[:digit:]]*:[[:digit:]]*$//g" ${wd}/raw_data/head.$vcf
+#sed -Ei "s/:DP//g" ${wd}/raw_data/head.$vcf
+
+# speed up chop off the unnecessary format and only keep the ones MoChA required
+#sed -E "s/,[[:digit:]]*:[[:digit:]]*$//g" ${wd}/raw_data/head.$vcf > ${wd}/raw_data/head_tmp.vcf
+#mv ${wd}/raw_data/head_tmp.vcf ${wd}/raw_data/head.$vcf
+
+#sed -E "s/:DP//g" ${wd}/raw_data/head.$vcf > ${wd}/raw_data/head_tmp.vcf
+#mv ${wd}/raw_data/head_tmp.vcf ${wd}/raw_data/head.$vcf
+
+#echo -e "Header complete.\n"
 
 #####################################################################
 
@@ -132,9 +142,9 @@ bcftools view -i 'MIN(FMT/AD)>=5' --threads ${threads} -Ou ${wd}/raw_data/head.$
 bcftools index --threads ${threads} -f ${wd}/raw_data/${id}.bcf
 echo -e "Keep the variants with AD>=5\n"
 
-# remove intermediate files 
-rm ${wd}/raw_data/head.${id}.txt
-rm ${wd}/raw_data/head.$vcf
+# remove intermediate files
+#rm ${wd}/raw_data/head.${id}.txt
+#rm ${wd}/raw_data/head.$vcf
 
 echo -e "$id sample: GC annotation is processing\n"
 gcbcf="${wd}/mCA/gc/gc.${id}.bcf"
