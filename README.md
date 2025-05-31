@@ -41,4 +41,9 @@ This dataset is used to validate that the pipeline runs to completion and does n
 
 ## How to Run
 
-<pre> ```bash docker build -t topmed-mca-loy . docker run -it -v "${PWD}:/workspace" topmed-mca-loy /bin/bash cd .. bash data/scripts/testing/set_up_and_test.sh ``` </pre>
+<pre> bash 
+  docker build -t topmed-mca-loy . 
+  docker run -it -v "${PWD}:/workspace" topmed-mca-loy /bin/bash 
+  cd .. 
+  bash data/scripts/testing/set_up_and_test.sh ``` 
+</pre>
