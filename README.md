@@ -27,8 +27,6 @@ The pipeline consists of several modular steps:
 - **Function:** Aggregates per-sample mCA calls into a unified tabular file.
 - **Output:** `proj1.all.mCA.tsv` summarizing all calls.
 
----
-
 ## Test Data
 
 The provided test dataset includes a publicly available CRAM file:
@@ -43,7 +41,4 @@ This dataset is used to validate that the pipeline runs to completion and does n
 
 ## How to Run
 
-‘‘‘docker build -t topmed-mca-loy .
-docker run -it -v "${PWD}:/workspace" topmed-mca-loy /bin/bash
-cd ..
-bash data/scripts/testing/set_up_and_test.sh’’’
+<pre> ```bash docker build -t topmed-mca-loy . docker run -it -v "${PWD}:/workspace" topmed-mca-loy /bin/bash cd .. bash data/scripts/testing/set_up_and_test.sh ``` </pre>
