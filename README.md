@@ -1,6 +1,6 @@
 # TOPMed mCA Pipeline
 
-This repository contains a pipeline for detecting mosaic chromosomal alterations (mCAs) in whole-genome sequencing data. Scripts for detecting loss of the Y chromosome (LoY) and allele shifts are included but not used in the test pipeline. 
+This repository contains a pipeline for detecting mosaic chromosomal alterations (mCAs) in whole-genome sequencing data. Scripts for detecting loss of the Y chromosome (LoY) and allele shifts are included but not used in the test pipeline. The testing script limits its analysis to chromosome 22 for expediency.
 
 This pipeline reproduces the analysis described in:
 
