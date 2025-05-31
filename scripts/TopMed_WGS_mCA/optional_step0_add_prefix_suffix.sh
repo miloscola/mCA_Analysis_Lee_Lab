@@ -56,8 +56,8 @@
 echo -e "script:optional_step0_add_prefix_suffix started at $(date)\n"
 
 # Specify your working directory
-mkdir -p workspace
-wd="/workspace"
+wd="/data"
+mkdir -p $wd
 echo -e "Working Directory: $wd\n"
 
 # Ensure necessary directories exist

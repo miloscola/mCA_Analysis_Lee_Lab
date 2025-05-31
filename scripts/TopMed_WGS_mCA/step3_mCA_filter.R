@@ -48,7 +48,7 @@
 ############################################################################################################
 
 # the "proj1"" name is hardcoded in both here and in script 2. Fix in snakemake 
-tsv <- file.path("workspace", "mCA", "mCA_results", "proj1.all.mCA.tsv")
+tsv <- file.path("data", "mCA", "mCA_results", "proj1.all.mCA.tsv")
 
 mCA <-read.csv(file=tsv, header=T,sep="\t")
 

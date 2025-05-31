@@ -112,6 +112,10 @@ mkdir -p $cram_input_dir
 urls=(  
   "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00114/alignment/HG00114.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram"
   "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00114/alignment/HG00114.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram.crai"
+  "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00234/alignment/HG00234.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram"
+  "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00234/alignment/HG00234.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram.crai"
+  "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00096/alignment/HG00096.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram"
+  "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/data/GBR/HG00096/alignment/HG00096.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram.crai"
 )
 
 # Loop through URLs
@@ -153,11 +157,11 @@ echo "All CRAM and CRAI files are downloaded in $cram_input_dir."
 ## Create TopMed sample list ##
 
 sample_list_ref_dir="$work_dir/mis"
-echo -e "HG00114" > "$sample_list_ref_dir/TopMed_sample_list"
+echo -e "HG00234\nHG00114\nHG00096" > "$sample_list_ref_dir/TopMed_sample_list"
 
 ## Create VCF list ##
 
-printf "HG00114.vcf" > "$sample_list_ref_dir/vcf.list.txt"
+printf "HG00234.vcf\nHG00114.vcf\nHG00096.vcf" > "$sample_list_ref_dir/vcf.list.txt"
 
 ## generate VCF files ##
 
@@ -176,10 +180,11 @@ bash data/scripts/TopMed_WGS_mCA/step1_mCA_calling.sh
 bash data/scripts/TopMed_WGS_mCA/optional_step2_mCA_compile.sh
 
 ## run step3_mCA_filter ##
+# #Note this step will produce a read error since there are no mCAs in the test data
 
 Rscript data/scripts/TopMed_WGS_mCA/step3_mCA_filter.R
 
 ## step4_allele_shift.sh ##
-# NOTE: this step is not strictly necesissary and only 
+# NOTE: this step is not strictly necesissary and requires lists of relavent files
 
 #bash data/scripts/TopMed_WGS_mCA/step4_allele_shift.sh

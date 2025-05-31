@@ -44,8 +44,8 @@
 echo -e "script:optional_step-1_pre-process_CRAM started at $(date)/n"
 
 # specify your wd
-mkdir -p workspace
-wd="/workspace"
+wd="/data"
+mkdir -p $wd
 echo -e "Working Directory: $wd\n"
 
 # set up threads

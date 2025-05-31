@@ -82,8 +82,8 @@ echo -e "script:step1_mCA_calling started at $(date)\n"
 echo -e "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}\n"
 
 # specify your wd
-mkdir -p workspace
-wd="/workspace"
+wd="/data"
+mkdir -p $wd
 echo -e "Working Directory: $wd\n"
 
 # Make sure the directories are ready

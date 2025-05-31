@@ -70,8 +70,8 @@ echo -e "script:step4_allele_shift started at $(date)\n"
 echo -e "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}\n"
 
 # specify your wd
-mkdir -p workspace
-wd="/workspace"
+wd="/data"
+mkdir -p $wd
 mCA_vcf="$wd/mCA/mCA_results/mCA_vcf"
 echo -e "Working Directory: $wd\n"
 
