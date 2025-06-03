@@ -138,34 +138,33 @@ echo -e "GRCh38 reference: ${ref} is applied.\n"
 
 # Keep the variants with AD >=5
 
-bcftools view -i 'MIN(FMT/AD)>=5' --threads ${threads} -Ou ${wd}/raw_data/head.$vcf | bcftools norm --no-version -Ob -o ${wd}/raw_data/${id}.bcf -d none -f $ref
-bcftools index --threads ${threads} -f ${wd}/raw_data/${id}.bcf
-echo -e "Keep the variants with AD>=5\n"
+# Loop through all VCFs listed in vcf.list.txt (Not Using Slurm)
+while IFS= read -r vcf; do
+  id=$(basename $vcf ".vcf")
+  echo -e "$vcf is processing, sample_id=$id\n"
 
-# remove intermediate files
-#rm ${wd}/raw_data/head.${id}.txt
-#rm ${wd}/raw_data/head.$vcf
+  # Keep the variants with AD >=5
+  bcftools view -i 'MIN(FMT/AD)>=5' --threads ${threads} -Ou ${wd}/raw_data/head.$vcf | \
+    bcftools norm --no-version -Ob -o ${wd}/raw_data/${id}.bcf -d none -f $ref
+  bcftools index --threads ${threads} -f ${wd}/raw_data/${id}.bcf
+  echo -e "Keep the variants with AD>=5\n"
 
-echo -e "$id sample: GC annotation is processing\n"
-gcbcf="${wd}/mCA/gc/gc.${id}.bcf"
+  echo -e "$id sample: GC annotation is processing\n"
+  gcbcf="${wd}/mCA/gc/gc.${id}.bcf"
+  bcftools +mochatools ${wd}/raw_data/${id}.bcf --threads ${threads} -Ob -o $gcbcf -- -t GC --fasta-ref $ref
+  bcftools index --threads ${threads} -f $gcbcf
+  echo -e "GC annotation is done. Output saved under: ${wd}/mCA/gc/gc.${id}.bcf\n"
 
-bcftools +mochatools ${wd}/raw_data/${id}.bcf --threads ${threads} -Ob -o $gcbcf -- -t GC --fasta-ref $ref
-bcftools index --threads ${threads} -f $gcbcf
-echo -e "GC annotation is done. Output saved under: ${wd}/mCA/gc/gc.${id}.bcf\n"
+  echo -e "$id sample: mCA Call is processing\n"
 
-echo -e "$id sample: mCA Call is processing\n"
+  otsv1=${outdir1}/mCA_calls.$id.tsv
+  otsv2=${outdir2}/mCA_stats.$id.tsv
+  ovcf=${outdir3}/mCA_vcf.$id.bcf
 
-#output setup
-outdir1="${wd}/mCA/mCA_results/mCA_calls"
-outdir2="${wd}/mCA/mCA_results/mCA_stats"
-outdir3="${wd}/mCA/mCA_results/mCA_vcf"
+  bcftools +mocha --threads ${threads} -g GRCh38 $gcbcf -z $otsv2 -c $otsv1 \
+    --min-dist 1000 --LRR-weight 0.0 --bdev-LRR-BAF 6.0 -o $ovcf -Ob
 
-otsv1=${outdir1}/mCA_calls.$id.tsv
-otsv2=${outdir2}/mCA_stats.$id.tsv
-ovcf=${outdir3}/mCA_vcf.$id.bcf
-
-bcftools +mocha --threads ${threads} -g GRCh38 $gcbcf -z $otsv2 -c $otsv1 --min-dist 1000 --LRR-weight 0.0 --bdev-LRR-BAF 6.0 -o $ovcf -Ob
-
+done < "${sample_dir}/vcf.list.txt"
 
 echo "Done! step1_mCA_calling for sample:${id}"
 echo "Ending at $(date)"

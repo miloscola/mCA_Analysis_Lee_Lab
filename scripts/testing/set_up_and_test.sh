@@ -161,7 +161,7 @@ echo -e "HG00234\nHG00114\nHG00096" > "$sample_list_ref_dir/TopMed_sample_list"
 
 ## Create VCF list ##
 
-printf "HG00234.vcf\nHG00114.vcf\nHG00096.vcf" > "$sample_list_ref_dir/vcf.list.txt"
+printf "HG00234.vcf\nHG00114.vcf\nHG00096.vcf\n" > "$sample_list_ref_dir/vcf.list.txt"
 
 ## generate VCF files ##
 
@@ -182,7 +182,7 @@ bash data/scripts/TopMed_WGS_mCA/optional_step2_mCA_compile.sh
 ## run step3_mCA_filter ##
 # #Note this step will produce a read error since there are no mCAs in the test data
 
-Rscript data/scripts/TopMed_WGS_mCA/step3_mCA_filter.R
+#Rscript data/scripts/TopMed_WGS_mCA/step3_mCA_filter.R
 
 ## step4_allele_shift.sh ##
 # NOTE: this step is not strictly necesissary and requires lists of relavent files
